@@ -6,86 +6,164 @@
 <title>Special Touch Store</title>
 
 <style>
-body{
-  font-family: Arial;
+*{
   margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family: Arial, sans-serif;
   background:#f5f5f5;
 }
+
 header{
   background:#000;
   color:#fff;
-  padding:12px;
+  padding:15px;
   text-align:center;
+  font-size:22px;
+  font-weight:bold;
+  position:sticky;
+  top:0;
+  z-index:100;
 }
+
 .top{
   background:#f8e7b5;
-  padding:8px;
+  padding:10px;
   text-align:center;
   font-size:14px;
+  font-weight:bold;
 }
+
 .container{
   display:grid;
   grid-template-columns:repeat(2,1fr);
-  gap:10px;
-  padding:10px;
+  gap:12px;
+  padding:12px;
 }
+
 .card{
   background:#fff;
-  border-radius:10px;
-  padding:10px;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1);
 }
+
 .card img{
   width:100%;
-  border-radius:10px;
+  height:220px;
+  object-fit:cover;
 }
+
+.info{
+  padding:10px;
+}
+
 .title{
-  font-size:14px;
-  margin:5px 0;
+  font-size:15px;
+  margin-bottom:5px;
+  font-weight:bold;
 }
+
 .price{
   color:#e91e63;
   font-weight:bold;
+  font-size:18px;
 }
+
 .old{
   text-decoration:line-through;
-  color:#999;
-  font-size:12px;
+  color:#888;
+  font-size:13px;
+  margin-left:5px;
 }
+
 .btn{
   background:#ff5722;
   color:#fff;
   border:none;
-  padding:6px;
+  padding:10px;
   width:100%;
-  border-radius:5px;
+  border-radius:6px;
+  margin-top:8px;
+  cursor:pointer;
+  font-weight:bold;
 }
+
+.qtyBox{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#ff5722;
+  color:#fff;
+  border-radius:6px;
+  margin-top:8px;
+  overflow:hidden;
+}
+
+.qtyBtn{
+  background:none;
+  border:none;
+  color:#fff;
+  width:35px;
+  height:35px;
+  font-size:20px;
+  cursor:pointer;
+}
+
 .cart{
   background:#fff;
-  margin:10px;
-  padding:10px;
-  border-radius:10px;
+  margin:12px;
+  padding:15px;
+  border-radius:12px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1);
 }
+
+.cart h3{
+  margin-bottom:12px;
+}
+
 input{
   width:100%;
-  padding:8px;
-  margin:5px 0;
+  padding:12px;
+  margin:6px 0;
+  border:1px solid #ccc;
+  border-radius:6px;
+  font-size:14px;
 }
+
 .order{
   background:#ff5722;
   color:#fff;
-  padding:10px;
+  padding:12px;
   border:none;
   width:100%;
-  border-radius:5px;
+  border-radius:6px;
+  margin-top:8px;
+  font-size:16px;
+  cursor:pointer;
+  font-weight:bold;
 }
+
 .whatsapp{
   background:#25D366;
   color:#fff;
-  padding:10px;
+  padding:12px;
   border:none;
   width:100%;
-  border-radius:5px;
-  margin-top:5px;
+  border-radius:6px;
+  margin-top:10px;
+  font-size:16px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+@media(max-width:600px){
+  .card img{
+    height:180px;
+  }
 }
 </style>
 
@@ -101,161 +179,307 @@ input{
 <div class="container" id="products"></div>
 
 <div class="cart">
+
 <h3>Total: ₹<span id="total">0</span></h3>
 
-<form action="https://formsubmit.co/mdshadav03@gmail.com" method="POST" onsubmit="return submitOrder()">
-  
-  <input type="hidden" name="Products" id="productName">
+<form 
+action="https://formsubmit.co/mdshadav03@gmail.com" 
+method="POST"
+onsubmit="return submitOrder()"
+>
 
-  <input type="text" id="name" name="Name" placeholder="Enter Full Name" required>
-  <input type="text" id="phone" name="Phone" placeholder="10 Digit Mobile Number" required>
-  <input type="text" id="address" name="Address" placeholder="Full Address with Pincode" required>
+<input type="hidden" name="Products" id="productName">
 
-  <button class="order" type="submit">Place Order (COD)</button>
+<input type="hidden" name="_captcha" value="false">
+
+<input type="text" id="name" name="Name" placeholder="Enter Full Name" required>
+
+<input type="tel" id="phone" name="Phone" placeholder="10 Digit Mobile Number" required>
+
+<input type="text" id="address" name="Address" placeholder="Full Address with Pincode" required>
+
+<button class="order" type="submit">
+Place Order (COD)
+</button>
+
 </form>
 
-<button class="whatsapp" onclick="whatsappOrder()">Order on WhatsApp</button>
+<button class="whatsapp" onclick="whatsappOrder()">
+Order on WhatsApp
+</button>
 
 </div>
 
 <script>
 
-// ✅ ZOMATO STYLE CART
 let cart = {};
 let total = 0;
 
 let products = [
-  {name:"Handbag 1", price:200, old:1499, img:"https://i.ibb.co/3YzpFL6X/Whats-App-Image-2026-04-12-at-8-45-08-PM-1-1.jpg"},
-  {name:"Handbag 2", price:200, old:1499, img:"https://i.ibb.co/8LHW94Bn/Whats-App-Image-2026-04-12-at-8-45-08-PM-2-25.jpg"},
-  {name:"Handbag 3", price:200, old:1499, img:"https://i.ibb.co/hJT7Wd2L/Whats-App-Image-2026-04-12-at-8-45-09-PM-18.jpg"},
-  {name:"Handbag 4", price:200, old:1499, img:"https://i.ibb.co/67DtDQyk/Whats-App-Image-2026-04-12-at-8-45-07-PM-25.jpg"},
-  {name:"Handbag 5", price:200, old:1499, img:"https://i.ibb.co/jkGX6mx8/Whats-App-Image-2026-04-12-at-8-45-07-PM.jpg"},
-  {name:"Premium Bag 1", price:799, old:1499, img:"https://i.ibb.co/zhXwFFKc/Whats-App-Image-2026-04-12-at-6-37-10-AM.jpg"},
-  {name:"Premium Bag 2", price:799, old:1499, img:"https://i.ibb.co/R4SxLD8G/Whats-App-Image-2026-04-12-at-6-37-10-AM-1.jpg"},
-  {name:"Premium Bag 3", price:799, old:1499, img:"https://i.ibb.co/6RdN3ZLG/Whats-App-Image-2026-04-12-at-6-37-11-AM.jpg"},
-  {name:"Premium Bag 4", price:799, old:1499, img:"https://i.ibb.co/bj24K7s6/Whats-App-Image-2026-04-12-at-6-40-13-AM.jpg"},
-  {name:"Premium Bag 5", price:799, old:1499, img:"https://i.ibb.co/BKGb0Wp8/Whats-App-Image-2026-04-12-at-6-40-48-AM.jpg"}
+
+{
+name:"Handbag 1",
+price:200,
+old:1499,
+img:"https://i.ibb.co/3YzpFL6X/Whats-App-Image-2026-04-12-at-8-45-08-PM-1-1.jpg"
+},
+
+{
+name:"Handbag 2",
+price:200,
+old:1499,
+img:"https://i.ibb.co/8LHW94Bn/Whats-App-Image-2026-04-12-at-8-45-08-PM-2-25.jpg"
+},
+
+{
+name:"Handbag 3",
+price:200,
+old:1499,
+img:"https://i.ibb.co/hJT7Wd2L/Whats-App-Image-2026-04-12-at-8-45-09-PM-18.jpg"
+},
+
+{
+name:"Handbag 4",
+price:200,
+old:1499,
+img:"https://i.ibb.co/67DtDQyk/Whats-App-Image-2026-04-12-at-8-45-07-PM-25.jpg"
+},
+
+{
+name:"Handbag 5",
+price:200,
+old:1499,
+img:"https://i.ibb.co/jkGX6mx8/Whats-App-Image-2026-04-12-at-8-45-07-PM.jpg"
+},
+
+{
+name:"Premium Bag 1",
+price:799,
+old:1499,
+img:"https://i.ibb.co/zhXwFFKc/Whats-App-Image-2026-04-12-at-6-37-10-AM.jpg"
+},
+
+{
+name:"Premium Bag 2",
+price:799,
+old:1499,
+img:"https://i.ibb.co/R4SxLD8G/Whats-App-Image-2026-04-12-at-6-37-10-AM-1.jpg"
+},
+
+{
+name:"Premium Bag 3",
+price:799,
+old:1499,
+img:"https://i.ibb.co/6RdN3ZLG/Whats-App-Image-2026-04-12-at-6-37-11-AM.jpg"
+},
+
+{
+name:"Premium Bag 4",
+price:799,
+old:1499,
+img:"https://i.ibb.co/bj24K7s6/Whats-App-Image-2026-04-12-at-6-40-13-AM.jpg"
+},
+
+{
+name:"Premium Bag 5",
+price:799,
+old:1499,
+img:"https://i.ibb.co/BKGb0Wp8/Whats-App-Image-2026-04-12-at-6-40-48-AM.jpg"
+}
+
 ];
 
 let container = document.getElementById("products");
 
 products.forEach((p,i)=>{
-  container.innerHTML += `
-  <div class="card">
-    <img src="${p.img}">
-    <div class="title">${p.name}</div>
-    <div class="price">₹${p.price} <span class="old">₹${p.old}</span></div>
-    
-    <div id="qty-${i}">
-      <button class="btn" onclick="addToCart(${i})">Add</button>
-    </div>
 
-  </div>
-  `;
+container.innerHTML += `
+
+<div class="card">
+
+<img src="${p.img}" alt="${p.name}">
+
+<div class="info">
+
+<div class="title">${p.name}</div>
+
+<div class="price">
+₹${p.price}
+<span class="old">₹${p.old}</span>
+</div>
+
+<div id="qty-${i}">
+<button class="btn" onclick="addToCart(${i})">
+Add to Cart
+</button>
+</div>
+
+</div>
+
+</div>
+
+`;
+
 });
 
-// ADD
 function addToCart(i){
-  if(!cart[i]){
-    cart[i] = 1;
-  } else {
-    cart[i]++;
-  }
-  updateUI(i);
-  calculateTotal();
+
+if(!cart[i]){
+cart[i] = 1;
+}else{
+cart[i]++;
 }
 
-// +
+updateUI(i);
+calculateTotal();
+
+}
+
 function increaseQty(i){
-  cart[i]++;
-  updateUI(i);
-  calculateTotal();
+
+cart[i]++;
+
+updateUI(i);
+calculateTotal();
+
 }
 
-// -
 function decreaseQty(i){
-  cart[i]--;
 
-  if(cart[i] <= 0){
-    delete cart[i];
-    document.getElementById(qty-${i}).innerHTML =
-      <button class="btn" onclick="addToCart(${i})">Add</button>;
-  } else {
-    updateUI(i);
-  }
+cart[i]--;
 
-  calculateTotal();
+if(cart[i] <= 0){
+
+delete cart[i];
+
+document.getElementById(`qty-${i}`).innerHTML = `
+<button class="btn" onclick="addToCart(${i})">
+Add to Cart
+</button>
+`;
+
+}else{
+
+updateUI(i);
+
 }
 
-// UI UPDATE
+calculateTotal();
+
+}
+
 function updateUI(i){
-  document.getElementById(qty-${i}).innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;background:#ff5722;color:#fff;border-radius:5px;">
-      <button onclick="decreaseQty(${i})" style="background:none;border:none;color:#fff;font-size:18px;">-</button>
-      <span>${cart[i]}</span>
-      <button onclick="increaseQty(${i})" style="background:none;border:none;color:#fff;font-size:18px;">+</button>
-    </div>
-  `;
+
+document.getElementById(`qty-${i}`).innerHTML = `
+
+<div class="qtyBox">
+
+<button class="qtyBtn" onclick="decreaseQty(${i})">
+-
+</button>
+
+<span>${cart[i]}</span>
+
+<button class="qtyBtn" onclick="increaseQty(${i})">
++
+</button>
+
+</div>
+
+`;
+
 }
 
-// TOTAL
 function calculateTotal(){
-  total = 0;
-  for(let i in cart){
-    total += products[i].price * cart[i];
-  }
-  document.getElementById("total").innerText = total;
+
+total = 0;
+
+for(let i in cart){
+
+total += products[i].price * cart[i];
+
 }
 
-// FORM SUBMIT
+document.getElementById("total").innerText = total;
+
+}
+
 function submitOrder(){
 
-  if(Object.keys(cart).length === 0){
-    alert("Please add products first!");
-    return false;
-  }
+if(Object.keys(cart).length === 0){
 
-  let productText = "";
+alert("Please add products first!");
 
-  for(let i in cart){
-    let p = products[i];
-    productText += p.name + " x" + cart[i] + " - ₹" + (p.price * cart[i]) + ", ";
-  }
+return false;
 
-  productText += " Total: ₹" + total;
-
-  document.getElementById("productName").value = productText;
-
-  alert("Order Placed Successfully!");
-
-  return true;
 }
 
-// WHATSAPP
+let productText = "";
+
+for(let i in cart){
+
+let p = products[i];
+
+productText +=
+p.name +
+" x" +
+cart[i] +
+" = ₹" +
+(p.price * cart[i]) +
+", ";
+
+}
+
+productText += " Total: ₹" + total;
+
+document.getElementById("productName").value = productText;
+
+alert("Order Placed Successfully!");
+
+return true;
+
+}
+
 function whatsappOrder(){
 
-  if(Object.keys(cart).length === 0){
-    alert("Please add products first!");
-    return;
-  }
+if(Object.keys(cart).length === 0){
 
-  let name = document.getElementById("name").value;
-  let phone = document.getElementById("phone").value;
-  let address = document.getElementById("address").value;
+alert("Please add products first!");
 
-  let message = "Order Details:%0A";
+return;
 
-  for(let i in cart){
-    let p = products[i];
-    message += p.name + " x" + cart[i] + " - ₹" + (p.price * cart[i]) + "%0A";
-  }
+}
 
-  message += "Total: ₹" + total + "%0A";
-  message += "Name: " + name + "%0A";
-  message += "Phone: " + phone + "%0A";
-  message += "Address: " + address;
+let name = document.getElementById("name").value;
+let phone = document.getElementById("phone").value;
+let address = document.getElementById("address").value;
 
-  window.open("https://wa.me/917838657382?text=" + message);
+let message = "🛍️ Order Details:%0A%0A";
+
+for(let i in cart){
+
+let p = products[i];
+
+message +=
+p.name +
+" x" +
+cart[i] +
+" = ₹" +
+(p.price * cart[i]) +
+"%0A";
+
+}
+
+message += "%0A💰 Total: ₹" + total;
+message += "%0A%0A👤 Name: " + name;
+message += "%0A📞 Phone: " + phone;
+message += "%0A🏠 Address: " + address;
+
+window.open(
+"https://wa.me/917838657382?text=" + message,
+"_blank"
+);
+
 }
 
 </script>
